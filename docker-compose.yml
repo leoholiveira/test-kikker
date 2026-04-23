@@ -1,0 +1,55 @@
+# Test-kikker — local stack (PostgreSQL + Rails)
+#
+# Apple Silicon (M1/M2/M3): use Docker Desktop with the default virtualization.
+# Images (postgres:16-alpine, ruby:3.4-slim) publish linux/arm64
+#
+# Usage:
+#   docker compose build
+#   docker compose up
+#   # first time or after pulling new migrations:
+#   docker compose exec web bin/rails db:prepare
+#
+# App: http://localhost:3000
+
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: test_kikker_development
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d test_kikker_development"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile.mac
+    command: >
+      bash -lc "rm -f tmp/pids/server.pid &&
+      ./bin/rails db:prepare &&
+      ./bin/rails db:test:prepare &&
+      ./bin/rails server -b 0.0.0.0 -p 3000"
+    volumes:
+      - .:/rails
+    ports:
+      - "3000:3000"
+    environment:
+      RAILS_ENV: development
+      DATABASE_URL: postgresql://postgres:postgres@db:5432/test_kikker_development
+      DATABASE_TEST_URL: postgresql://postgres:postgres@db:5432/test_kikker_test
+    depends_on:
+      db:
+        condition: service_started
+    stdin_open: true
+    tty: true
+
+volumes:
+  postgres_data:
