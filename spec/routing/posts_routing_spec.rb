@@ -2,6 +2,14 @@ require "rails_helper"
 
 RSpec.describe PostsController, type: :routing do
   describe "routing" do
+    it "routes to #top" do
+      expect(get: "/posts/top").to route_to("posts#top")
+    end
+
+    it "routes to #ips_by_authors" do
+      expect(get: "/posts/ips_by_authors").to route_to("posts#ips_by_authors")
+    end
+
     it "routes to #index" do
       expect(get: "/posts").to route_to("posts#index")
     end

@@ -3,5 +3,5 @@ class Rating < ApplicationRecord
   belongs_to :user
 
   validates :value, presence: true, inclusion: { in: 1..5 }
-  validates :user_id, uniqueness: { scope: :post_id, message: "Só é possível avaliar uma publicação uma vez." }
+  validates :user_id, uniqueness: { scope: :post_id, message: "Já avaliou esta publicação." }
 end

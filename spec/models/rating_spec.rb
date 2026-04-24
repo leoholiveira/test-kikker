@@ -8,6 +8,6 @@ RSpec.describe Rating, type: :model do
   it do
     is_expected.to validate_uniqueness_of(:user_id)
       .scoped_to(:post_id)
-      .with_message("Só é possível avaliar uma publicação uma vez.")
+      .with_message("Já avaliou esta publicação.")
   end
 end
