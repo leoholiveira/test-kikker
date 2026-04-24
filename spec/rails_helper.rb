@@ -43,6 +43,8 @@ Shoulda::Matchers.configure do |config|
 end
 
 RSpec.configure do |config|
+  config.include FactoryBot::Syntax::Methods
+
   # Remove this line if you're not using ActiveRecord or ActiveRecord fixtures
   config.fixture_paths = [
     Rails.root.join("spec/fixtures")
@@ -72,6 +74,10 @@ RSpec.configure do |config|
   #
   # To enable this behaviour uncomment the line below.
   # config.infer_spec_type_from_file_location!
+
+  config.before(:each, type: :request) do
+    host! "localhost"
+  end
 
   # Filter lines from Rails gems in backtraces.
   config.filter_rails_from_backtrace!
